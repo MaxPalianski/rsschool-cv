@@ -12,3 +12,12 @@ img {
 h1 {
     color: #2c3e50;
 }
+
+ul {
+    padding-left: 20px;
+    color: #555;
+}
+
+li {
+    margin-botton: 8px;
+}

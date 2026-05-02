@@ -1,0 +1,28 @@
+.dashboard-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gap-m);
+    padding: var(--gap-m);
+}
+
+.card {
+    background-color: var(--bg-200);
+    padding: 20px;
+    border-radius: var(--radius-l);
+    border: 1px solid var(--bg-300);
+    min-width: 200px;
+    flex: 1;
+}
+
+.card h2 {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin: 0 0 10px 0;
+}
+
+.card .value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
+    color: #f8fafc;
+}

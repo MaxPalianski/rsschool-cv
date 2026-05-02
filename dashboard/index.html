@@ -6,17 +6,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
 
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <div class="app-container">
         <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <span class="logo-bold">SKY</span><span class="logo-light">DASH</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active"><a href="#">Dashboard</a></li>
+                    <li><a href="#">Products</a></li>
+                    <li><a href="#">Sales</a></li>
+                    <li><a href="#">Customers</a></li>
+                    <li><a href="#">Settings</a></li>
+                </ul>
+            </nav>
         </aside>
         <div class="main-content">
             <header class="header" id="header">
+                <div class="search-bar">Search...</div>
+                <div class="user-profile">John Marston</div>
             </header>
             <main class="dashboard-grid" id="dashboard-grid">
+                <section class="stats-row">
+                    <div class="card">Total Sales</div>
+                    <div class="card">Visitors</div>
+                    <div class="card">Orders</div>
+                </section>
+                <section class="chart-container">
+                    <div class="card big-card">Sales Analytics</div>
+                </section>
+                <article class="card stats-card">
+                    <h2>Total Revenue</h2>
+                    <p class="value">$30,500</p>
+                    <span class="trend positive">+12%</span>
+                </article>
+                <article class="card stats-card">
+                    <h2>Active Projects</h2>
+                    <p class="value">12</p>
+                    <span class="trend">Running</span>
+                </article>
             </main>
         </div>
     </div>

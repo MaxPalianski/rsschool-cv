@@ -1,0 +1,29 @@
+.app-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 260px;
+    background-color: var(--bg-200);
+    border-right: 1px solid var(--bg-300);
+    flex-shrink: 0;
+}
+
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    height: 70px;
+    background-color: var(--bg-100);
+    border-bottom: 1px solid var(--bg-300);
+    padding: 0 var(--gam-m);
+}
+
+.dashboard-grid {
+    padding: var(--gap-m);
+    background-color: var(--bg-100);
+}

@@ -22,7 +22,7 @@
     margin-bottom: 0.5rem;
 }
 
-.slidebar-nav li.active a {
+.sidebar-nav li.active a {
     background-color: var(--primary-soft);
     color: var(--primary);
     font-weight: 700;

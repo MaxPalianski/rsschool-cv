@@ -20,7 +20,7 @@
     height: 70px;
     background-color: var(--bg-100);
     border-bottom: 1px solid var(--bg-300);
-    padding: 0 var(--gam-m);
+    padding: 0 var(--gap-m);
 }
 
 .dashboard-grid {

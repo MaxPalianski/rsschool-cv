@@ -1,5 +1,5 @@
 import { updateDateTime } from "./js/ui.js";
-import { stats, orders } from "./js/data.js";
+import { orders, getCurrentStats } from "./js/data.js";
 import { renderStats } from "./js/ui.js";
 import { renderOrders } from "./js/ui.js";
 import { renderSimpleChart } from "./js/charts.js";
@@ -11,16 +11,17 @@ let currentEmployees = [];
 
 function updateDashboard() {
     const data = loadData();
-    currentProjects = data.projects || [];
-    currentEmployees = data.employees || [];
-    renderProjectsTable(currentProjects);
-    renderEmployeesTable(currentEmployees);
-    renderStats('stats-container', stats);
+    const employees = data.employees || [];
+    const projects = data.projects || [];
+    renderEmployeesTable(employees);
+    renderProjectsTable(projects);
+    const statsData = getCurrentStats(employees, projects);
+
+    renderStats('stats-container', statsData);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     updateDateTime();
-    renderStats('stats-container', stats);
     renderOrders('orders-body', orders)
 
     const navLinks = document.querySelectorAll('.sidebar-nav li');
@@ -167,31 +168,26 @@ document.addEventListener('DOMContentLoaded', () => {
     empForm.addEventListener('input', () => {
         const saveBtn = empForm.querySelector('.save-btn');
         if (empForm.checkValidity()) {
-            submitBtn.disabled = false;
-            submitBtn.style.opacity = "1";
+            saveBtn.disabled = false;
+            saveBtn.style.opacity = "1";
         } else {
-            submitBtn.disabled = true;
-            submitBtn.style.opacity = "0.5";
+            saveBtn.disabled = true;
+            saveBtn.style.opacity = "0.5";
         }
     })
 
 
     const loadedData = loadData();
     if (loadedData.employees.length === 0 && loadedData.projects.length === 0) {
-        console.log("LocalStorage is empty. Initializing seed data...");
+        console.log("LocalStorage is empty.");
         currentEmployees = [...orders];
         currentProjects = [...initialProjects];
-
         saveData(currentEmployees, currentProjects);
     } else {
         console.log("Loading data from localStorage...");
         currentEmployees = loadedData.employees;
         currentProjects = loadedData.projects;
     }
-
-    renderProjectsTable(currentProjects);
-    renderEmployeesTable(currentEmployees);
-
 
     projectForm.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -247,5 +243,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+    updateDashboard();
 });
 

@@ -146,7 +146,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     
     const loadedData = loadData();
-    if (!localStorage.getItem('monthlyData')) {
+    if (!localStorage.getItem('monthlyData') || (loadedData.employees.length === 0 && loadedData.projects.length === 0)) {
+        console.log("Initializing seed data...");
         currentEmployees = loadedData.employees || [];
         currentProjects = loadedData.projects || [];
     } else {
@@ -156,6 +157,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     renderProjectsTable(currentProjects);
+    if (document.getElementById('employees-section').style.display === 'block') {
+    renderEmployeesTable(currentEmployees);
+}
 
     projectForm.addEventListener('submit', (e) => {
         e.preventDefault();

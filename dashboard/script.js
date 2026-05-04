@@ -12,7 +12,9 @@ let currentEmployees = [];
 function updateDashboard() {
     const data = loadData();
     currentProjects = data.projects || [];
+    currentEmployees = data.employees || [];
     renderProjectsTable(currentProjects);
+    renderEmployeesTable(currentEmployees);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -62,10 +64,6 @@ document.addEventListener('DOMContentLoaded', () => {
             updateDashboard();
         });
     }
-
-    let data = loadData();
-    let projectsToShow = data.projects.length > 0 ? data.projects : initialProjects;
-    renderProjectsTable(projectsToShow);
 
     const sidebar = document.getElementById('sidebar');
     const toggleBtn = document.getElementById('sidebar-toggle');
@@ -144,22 +142,23 @@ document.addEventListener('DOMContentLoaded', () => {
         empForm.reset();
     });
 
-    
+
     const loadedData = loadData();
-    if (!localStorage.getItem('monthlyData') || (loadedData.employees.length === 0 && loadedData.projects.length === 0)) {
-        console.log("Initializing seed data...");
-        currentEmployees = loadedData.employees || [];
-        currentProjects = loadedData.projects || [];
-    } else {
+    if (loadedData.employees.length === 0 && loadedData.projects.length === 0) {
+        console.log("LocalStorage is empty. Initializing seed data...");
         currentEmployees = [...orders];
         currentProjects = [...initialProjects];
+
         saveData(currentEmployees, currentProjects);
+    } else {
+        console.log("Loading data from localStorage...");
+        currentEmployees = loadedData.employees;
+        currentProjects = loadedData.projects;
     }
 
     renderProjectsTable(currentProjects);
-    if (document.getElementById('employees-section').style.display === 'block') {
     renderEmployeesTable(currentEmployees);
-}
+
 
     projectForm.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -180,15 +179,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const tableBody = document.getElementById('table-body');
-    tableBody.addEventListener('click', (e) => {
-        const deleteBtn = e.target.closest('.delete-btn');
-        if (deleteBtn) {
-            const index = deleteBtn.dataset.index;
-            currentProjects.splice(index, 1);
-            saveData(currentEmployees, currentProjects);
-            renderProjectsTable(currentProjects);
-        }
-    });
-
+    if (tableBody) {
+        tableBody.addEventListener('click', (e) => {
+            const deleteBtn = e.target.closest('.delete-btn');
+            if (deleteBtn) {
+                const index = deleteBtn.dataset.index;
+                currentProjects.splice(index, 1);
+                saveData(currentEmployees, currentProjects);
+                renderProjectsTable(currentProjects);
+            }
+        });
+    }
 });
 

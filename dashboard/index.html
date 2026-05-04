@@ -172,12 +172,16 @@
                     </div>
                     <div class="form-group">
                         <label>Salary ($)</label>
-                        <input type="number" id="e-salary" required>
+                        <input type="number" id="e-salary" min="0" required>
                     </div>
                 </div>
                 <div class="form-group">
+                    <label>Date of Birth</label>
+                    <input type="date" id="e-dob" required>
+                </div>
+                <div class="form-group">
                     <label>Status</label>
-                    <select id="e-status">
+                    <select id="e-status" required>
                         <option value="Active">Active</option>
                         <option value="On Leave">On Leave</option>
                         <option value="Terminated">Terminated</option>

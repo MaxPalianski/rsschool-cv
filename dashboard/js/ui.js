@@ -38,6 +38,9 @@ export function renderEmployeesTable(empArray) {
     container.innerHTML = '';
 
     empArray.forEach((emp, index) => {
+        const birthDate = new Date(emp.dob);
+        const age = new Date().getFullYear() - birthDate.getFullYear();
+        
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${emp.name}</td>

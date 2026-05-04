@@ -15,6 +15,7 @@ function updateDashboard() {
     currentEmployees = data.employees || [];
     renderProjectsTable(currentProjects);
     renderEmployeesTable(currentEmployees);
+    renderStats('stats-container', stats);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -118,6 +119,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const addEmpBtn = document.getElementById('add-employee-btn');
     const closeEmpBtn = document.getElementById('close-modal-employee');
     const empForm = document.getElementById('employee-form');
+    const submitBtn = empForm.querySelector('.btn');
+    const saveBtn = empForm.querySelector('.save-btn');
+
 
     addEmpBtn.addEventListener('click', () => {
         empModal.style.display = 'flex';
@@ -128,11 +132,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     empForm.addEventListener('submit', (e) => {
         e.preventDefault();
+
+        const dobValue = document.getElementById('e-dob').value;
+        if (!dobValue) return;
+
+        const dob = new Date(dobValue);
+        const today = new Date();
+        let age = today.getFullYear() - dob.getFullYear();
+        const m = today.getMonth() - dob.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+            age--;
+        }
+        if (age < 18) {
+            alert("The employee must be over 18 years old!");
+            return;
+        }
+
         const newEmp = {
             name: document.getElementById('e-name').value,
             position: document.getElementById('e-position').value,
             salary: Number(document.getElementById('e-salary').value),
-            status: document.getElementById('e-status').value
+            status: document.getElementById('e-status').value,
+            dob: dobValue
         };
         currentEmployees.push(newEmp);
 
@@ -140,7 +161,19 @@ document.addEventListener('DOMContentLoaded', () => {
         renderEmployeesTable(currentEmployees);
         empModal.style.display = 'none';
         empForm.reset();
+
     });
+
+    empForm.addEventListener('input', () => {
+        const saveBtn = empForm.querySelector('.save-btn');
+        if (empForm.checkValidity()) {
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = "1";
+        } else {
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = "0.5";
+        }
+    })
 
 
     const loadedData = loadData();
@@ -191,16 +224,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     const empTableBody = document.getElementById('employees-body');
-if (empTableBody) {
-    empTableBody.addEventListener('click', (e) => {
-        const deleteBtn = e.target.closest('.delete-btn');
-        if (deleteBtn) {
-            const index = deleteBtn.dataset.index;
-            currentEmployees.splice(index, 1);
-            saveData(currentEmployees, currentProjects);
-            renderEmployeesTable(currentEmployees);
-        }
-    });
-}
+    if (empTableBody) {
+        empTableBody.addEventListener('click', (e) => {
+            const deleteBtn = e.target.closest('.delete-btn');
+            if (deleteBtn) {
+                const index = deleteBtn.dataset.index;
+                currentEmployees.splice(index, 1);
+                saveData(currentEmployees, currentProjects);
+                renderEmployeesTable(currentEmployees);
+            }
+        });
+    }
 });
 

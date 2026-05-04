@@ -12,4 +12,5 @@ export function renderSimpleChart(containerId) {
         `).join('')}
         </div>
         `;
+
 }

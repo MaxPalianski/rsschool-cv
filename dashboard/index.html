@@ -7,6 +7,7 @@
     <title>Dashboard</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -16,42 +17,174 @@
             <div class="logo">
                 <span class="logo-bold">SKY</span><span class="logo-light">DASH</span>
             </div>
+            <div class="period-controls" style="margin-bottom: var(--gap-m); padding: 0 var(--gap-m);">
+                <select id="month-select" class="period-select">
+                    <option value="0">January</option>
+                    <option value="1">February</option>
+                    <option value="2">March</option>
+                    <option value="3">April</option>
+                    <option value="4" selected>May</option>
+                    <option value="5">June</option>
+                    <option value="6">July</option>
+                    <option value="7">August</option>
+                    <option value="8">September</option>
+                    <option value="9">October</option>
+                    <option value="10">November</option>
+                    <option value="11">December</option>
+                </select>
+                <select id="year-select" class="period-select">
+                    <option value="2025">2025</option>
+                    <option value="2026" selected>2026</option>
+                    <option value="2027">2027</option>
+                </select>
+            </div>
 
             <nav class="sidebar-nav">
                 <ul>
-                    <li class="active"><a href="#">Dashboard</a></li>
-                    <li><a href="#">Products</a></li>
-                    <li><a href="#">Sales</a></li>
-                    <li><a href="#">Customers</a></li>
-                    <li><a href="#">Settings</a></li>
+                    <li class="active"><a href="#"><i class="fas fa-th-large"></i><span>Dashboard</span></a></li>
+                    <li><a href="#"><i class="fas fa-box"></i><span>Products</span></a></li>
+                    <li><a href="#"><i class="fas fa-chart-line"></i><span>Sales</span></a></li>
+                    <li><a href="#"><i class="fas fa-users"></i><span>Employees</span></a></li>
+                    <li><a href="#"><i class="fas fa-cog"></i><span>Settings</span></a></li>
                 </ul>
             </nav>
+            <button id="sidebar-toggle" class="toggle-btn">
+                <i class="fas fa-chevron-left"></i>
+            </button>
         </aside>
         <div class="main-content">
             <header class="header" id="header">
-                <div class="search-bar">Search...</div>
-                <div class="user-profile">John Marston</div>
+                <div class="header-left">
+                    <div class="search-wrapper">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Search...">
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="date-display" id="current-date">
+
+                    </div>
+                    <div class="user-info">
+                        <img src="https://ui-avatars.com/api/?name=John+Marston" alt="avatar" class="avatar">
+                        <span>John Marston</span>
+                    </div>
+                </div>
             </header>
-            <main class="dashboard-grid" id="dashboard-grid">
-                <div class="stats-row">
-                    <div class="card"><h2>Total Sales</h2></div>
-                    <div class="card"><h2>Visitors</h2></div>
-                    <div class="card"><h2>Orders</h2></div>
+            <main class="dashboard-grid">
+                <div id="dashboard-section" style="display: contents;">
+                    <div id="stats-container" style="display: contents;"></div>
+
+                    <div class="card table-card" style="grid-column: span 4;">
+                        <div class="table-header"
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h2 id="table-title">Projects</h2>
+                            <button class="add-btn" id="add-item-btn"
+                                style="background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">
+                                + Add Project
+                            </button>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="order-table" style="width: 100%; border-collapse: collapse;">
+                                <thead id="table-head">
+
+                                </thead>
+                                <tbody id="table-body">
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-                <div class="chart-container">
-                    <div class="card big-card"><h2>Sales Analytics</h2></div>
+                <div id="employees-section" style="display: none;">
+                    <div class="header-action">
+                        <h2>Team Management</h2>
+                        <button id="add-employee-btn" class="add-btn">+ Add Employee</button>
+                    </div>
+                    <div class="card big-card">
+                        <table class="order-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Position</th>
+                                    <th>Salary ($)</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="employees-body">
+
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <article class="card stats-card">
-                    <h2>Total Revenue</h2>
-                    <p class="value">$30,500</p>
-                    <span class="trend positive">+12%</span>
-                </article>
-                <article class="card stats-card">
-                    <h2>Active Projects</h2>
-                    <p class="value">12</p>
-                    <span class="trend">Running</span>
-                </article>
             </main>
+        </div>
+    </div>
+    <div id="modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Project</h2>
+                <button id="close-modal">&times;</button>
+            </div>
+            <form id="project-form">
+                <div class="form-group">
+                    <label>Project Name</label>
+                    <input type="text" id="p-name" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Revenue ($)</label>
+                        <input type="number" id="p-revenue" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Cost ($)</label>
+                        <input type="number" id="p-cost" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="p-status">
+                        <option value="In Progress">In Progress</option>
+                        <option value="Completed">Completed</option>
+                        <option value="On Hold">On Hold</option>
+                    </select>
+                </div>
+                <button type="submit" class="save-btn">Save Project</button>
+            </form>
+        </div>
+    </div>
+    <div id="modal-employee" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Employee</h2>
+                <button id="close-modal-employee">&times;</button>
+            </div>
+            <form id="employee-form">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="e-name" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Position</label>
+                        <input type="text" id="e-position" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Salary ($)</label>
+                        <input type="number" id="e-salary" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="e-status">
+                        <option value="Active">Active</option>
+                        <option value="On Leave">On Leave</option>
+                        <option value="Terminated">Terminated</option>
+                    </select>
+                </div>
+                <button type="submit" class="save-btn">Save Employee</button>
+            </form>
         </div>
     </div>
     <script type="module" src="./script.js"></script>

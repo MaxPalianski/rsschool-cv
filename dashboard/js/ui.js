@@ -16,7 +16,17 @@ export function renderProjectsTable(projectsArray) {
     if (!container) return;
     container.innerHTML = '';
 
+    if (projectsArray.length === 0) {
+        container.innerHTML = '<tr><td colspan="6" style="text-align:center;">No projects active.</td></tr>';
+        const totalElement = document.getElementById('total-income');
+        if (totalElement) totalElement.textContent = '$0';
+        return;
+    }
+
     projectsArray.forEach((project, index) => {
+        const profit = project.revenue - project.cost;
+        const profitClass = profit >= 0 ? 'text-green' : 'text-red';
+
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${project.name}</td>
@@ -26,10 +36,18 @@ export function renderProjectsTable(projectsArray) {
                 $${(project.revenue - project.cost).toLocaleString()}
             </td>
             <td><span class="status-badge">${project.status}</span></td>
-            <td>${getActionButtons(index)}</td> 
+            <td>${getActionButtons(index, 'delete-project-btn')}</td> 
         `;
         container.appendChild(tr);
     });
+    const totalIncome = projectsArray.reduce((sum, p) => sum + (p.revenue - p.cost), 0);
+    const totalElement = document.getElementById('total-income');
+    if (totalElement) {
+        totalElement.textContent = `$${totalIncome.toLocaleString()}`;
+        totalElement.style.color = totalIncome >= 0 ? 'text-green' : 'text-red'
+    }
+
+    updateTotalIncome(projectsArray);
 }
 
 export function renderEmployeesTable(empArray) {
@@ -37,10 +55,15 @@ export function renderEmployeesTable(empArray) {
     if (!container) return;
     container.innerHTML = '';
 
+    if (empArray.length === 0) {
+        container.innerHTML = '<tr><td colspan="6" style="text-align:center;">No employees found. Add your first team member!</td></tr>';
+        return;
+    }
+
     empArray.forEach((emp, index) => {
         const birthDate = new Date(emp.dob);
-        const age = new Date().getFullYear() - birthDate.getFullYear();
-        
+        const age = isNaN(birthDate) ? "N/A" : new Date().getFullYear() - birthDate.getFullYear();
+
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${emp.name}</td>
@@ -90,4 +113,13 @@ export function renderOrders(containerId, data) {
         <td><span class="badge badge-${order.status.toLowerCase()}">${order.status}</span></td>
         </tr>`;
     }).join('');
+}
+
+function updateTotalIncome(projectsArray) {
+    const totalIncome = projectsArray.reduce((sum, p) => sum + (p.revenue - p.cost), 0);
+    const totalElement = document.getElementById('total-income');
+    if (totalElement) {
+        totalElement.textContent = `$${totalIncome.toLocaleString()}`;
+        totalElement.className = totalIncome >= 0 ? 'text-green' : 'text-red';
+    }
 }

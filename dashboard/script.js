@@ -235,5 +235,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+    const empTableContainer = document.getElementById('orders-body');
+    if (empTableContainer) {
+        empTableContainer.addEventListener('click', (e) => {
+            const deleteBtn = e.target.closest('.delete-btn');
+            if (deleteBtn) {
+                const index = deleteBtn.dataset.index;
+                currentEmployees.splice(index, 1);
+                saveData(currentEmployees, currentProjects);
+                renderEmployeesTable(currentEmployees);
+            }
+        });
+    }
 });
 

@@ -83,11 +83,11 @@ document.addEventListener('DOMContentLoaded', () => {
         tableTitle.textContent = 'Projects';
         tableHead.innerHTML = `
         <tr>
-        <th>Project Name</th>
-        <th>Revenue</th>
-        <th>Cost</th>
+        <th data-key="name">Project Name</th>
+        <th data-key="revenue">Revenue</th>
+        <th data-key="cost">Cost</th>
         <th>Profit</th>
-        <th>Status</th>
+        <th data-key="status">Status</th>
         <th>Actions</th>
         </tr>
         `;
@@ -193,93 +193,98 @@ document.addEventListener('DOMContentLoaded', () => {
         saveProjBtn.style.opacity = isValid ? "1" : "0.5";
     });
 
-    const empThead = document.querySelector('.order-table thead');
+    document.querySelectorAll('.order-table').forEach(table => {
+        const thead = table.querySelector('thead');
+        if (!thead) return;
 
-    if (empThead) {
-        empThead.addEventListener('click', (e) => {
-            const key = e.target.dataset.key;
-            if (e.target.tagName === 'TH' && key && key !== 'Actions') {
-                currentEmployees.sort((a, b) => {
-                    const valA = a[key];
-                    const valB = b[key];
-                    if (typeof valA === 'number') {
-                        return valA - valB;
-                    } else {
-                        return String(valA).localeCompare(String(valB));
-                    }
-                });
+        thead.addEventListener('click', (e) => {
+            const th = e.target.closest('th');
+            if (!th || !th.dataset.key || th.dataset.key === 'actions') return;
+
+            const key = th.dataset.key.toLowerCase();
+
+            const isEmployees = table.querySelector('#employees-body, #orders-body');
+            const targetArray = isEmployees ? currentEmployees : currentProjects;
+            const renderFn = isEmployees ? renderEmployeesTable : renderProjectsTable;
+
+            targetArray.sort((a, b) => {
+                const valA = a[key];
+                const valB = b[key];
+
+                if (typeof valA === 'number') return valA - valB;
+                return String(valA || "").localeCompare(String(valB || ""));
+            });
+
+            renderFn(targetArray);
+        });
+    });
+
+
+    const loadedData = loadData();
+    if (loadedData.employees.length === 0 && loadedData.projects.length === 0) {
+        console.log("LocalStorage is empty.");
+        currentEmployees = [...orders];
+        currentProjects = [...initialProjects];
+        saveData(currentEmployees, currentProjects);
+    } else {
+        console.log("Loading data from localStorage...");
+        currentEmployees = loadedData.employees;
+        currentProjects = loadedData.projects;
+    }
+
+    projectForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const newObj = {
+            name: document.getElementById('p-name').value,
+            revenue: Number(document.getElementById('p-revenue').value),
+            cost: Number(document.getElementById('p-cost').value),
+            status: document.getElementById('p-status').value
+        };
+
+        currentProjects.push(newObj);
+        saveData(currentEmployees, currentProjects);
+
+        renderProjectsTable(currentProjects);
+        modal.style.display = 'none';
+        projectForm.reset();
+    });
+
+    const tableBody = document.getElementById('table-body');
+    if (tableBody) {
+        tableBody.addEventListener('click', (e) => {
+            const deleteBtn = e.target.closest('.delete-btn');
+            if (deleteBtn) {
+                const index = deleteBtn.dataset.index;
+                currentProjects.splice(index, 1);
+                saveData(currentEmployees, currentProjects);
+                renderProjectsTable(currentProjects);
+            }
+        });
+    }
+    const empTableBody = document.getElementById('employees-body');
+    if (empTableBody) {
+        empTableBody.addEventListener('click', (e) => {
+            const deleteBtn = e.target.closest('.delete-btn');
+            if (deleteBtn) {
+                const index = deleteBtn.dataset.index;
+                currentEmployees.splice(index, 1);
+                saveData(currentEmployees, currentProjects);
                 renderEmployeesTable(currentEmployees);
+            }
+        });
     }
-})
+    const empTableContainer = document.getElementById('orders-body');
+    if (empTableContainer) {
+        empTableContainer.addEventListener('click', (e) => {
+            const deleteBtn = e.target.closest('.delete-btn');
+            if (deleteBtn) {
+                const index = deleteBtn.dataset.index;
+                currentEmployees.splice(index, 1);
+                saveData(currentEmployees, currentProjects);
+                renderEmployeesTable(currentEmployees);
+            }
+        });
     }
-
-
-const loadedData = loadData();
-if (loadedData.employees.length === 0 && loadedData.projects.length === 0) {
-    console.log("LocalStorage is empty.");
-    currentEmployees = [...orders];
-    currentProjects = [...initialProjects];
-    saveData(currentEmployees, currentProjects);
-} else {
-    console.log("Loading data from localStorage...");
-    currentEmployees = loadedData.employees;
-    currentProjects = loadedData.projects;
-}
-
-projectForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const newObj = {
-        name: document.getElementById('p-name').value,
-        revenue: Number(document.getElementById('p-revenue').value),
-        cost: Number(document.getElementById('p-cost').value),
-        status: document.getElementById('p-status').value
-    };
-
-    currentProjects.push(newObj);
-    saveData(currentEmployees, currentProjects);
-
-    renderProjectsTable(currentProjects);
-    modal.style.display = 'none';
-    projectForm.reset();
+    updateDashboard();
 });
-
-const tableBody = document.getElementById('table-body');
-if (tableBody) {
-    tableBody.addEventListener('click', (e) => {
-        const deleteBtn = e.target.closest('.delete-btn');
-        if (deleteBtn) {
-            const index = deleteBtn.dataset.index;
-            currentProjects.splice(index, 1);
-            saveData(currentEmployees, currentProjects);
-            renderProjectsTable(currentProjects);
-        }
-    });
-}
-const empTableBody = document.getElementById('employees-body');
-if (empTableBody) {
-    empTableBody.addEventListener('click', (e) => {
-        const deleteBtn = e.target.closest('.delete-btn');
-        if (deleteBtn) {
-            const index = deleteBtn.dataset.index;
-            currentEmployees.splice(index, 1);
-            saveData(currentEmployees, currentProjects);
-            renderEmployeesTable(currentEmployees);
-        }
-    });
-}
-const empTableContainer = document.getElementById('orders-body');
-if (empTableContainer) {
-    empTableContainer.addEventListener('click', (e) => {
-        const deleteBtn = e.target.closest('.delete-btn');
-        if (deleteBtn) {
-            const index = deleteBtn.dataset.index;
-            currentEmployees.splice(index, 1);
-            saveData(currentEmployees, currentProjects);
-            renderEmployeesTable(currentEmployees);
-        }
-    });
-}
-updateDashboard();
-});
-

@@ -275,3 +275,8 @@
     margin-bottom: var(--gap-m);
     padding: 0 10px;
 }
+
+.order-table th[data-key] {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}

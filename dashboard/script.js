@@ -97,7 +97,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('modal');
     const addBtn = document.getElementById('add-item-btn');
     const closeBtn = document.getElementById('close-modal');
-    const projectForm = document.getElementById('project-form');
 
     addBtn.addEventListener('click', () => {
         modal.style.display = 'flex';
@@ -120,9 +119,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const addEmpBtn = document.getElementById('add-employee-btn');
     const closeEmpBtn = document.getElementById('close-modal-employee');
     const empForm = document.getElementById('employee-form');
-    const submitBtn = empForm.querySelector('.btn');
-    const saveBtn = empForm.querySelector('.save-btn');
+    const saveEmpBtn = empForm.querySelector('.save-btn');
+    const projectForm = document.getElementById('project-form');
+    const saveProjBtn = projectForm.querySelector('.save-btn');
 
+    saveEmpBtn.disabled = true;
+    saveEmpBtn.style.opacity = "0.5";
+    saveProjBtn.disabled = true;
+    saveProjBtn.style.opacity = "0.5";
 
     addEmpBtn.addEventListener('click', () => {
         empModal.style.display = 'flex';
@@ -165,17 +169,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     });
 
-    empForm.addEventListener('input', () => {
-        const saveBtn = empForm.querySelector('.save-btn');
-        if (empForm.checkValidity()) {
-            saveBtn.disabled = false;
-            saveBtn.style.opacity = "1";
-        } else {
-            saveBtn.disabled = true;
-            saveBtn.style.opacity = "0.5";
-        }
-    })
+    function checkAge(dobValue) {
+        if (!dobValue) return false;
+        const dob = new Date(dobValue)
+        const today = new Date();
+        let age = today.getFullYear() - dob.getFullYear();
+        const m = today.getMonth() - dob.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+        return age >= 18;
+    }
 
+    empForm.addEventListener('input', () => {
+        const dobValue = document.getElementById('e-dob').value;
+        const isValid = empForm.checkValidity() && checkAge(dobValue);
+
+        saveEmpBtn.disabled = !isValid;
+        saveEmpBtn.style.opacity = isValid ? "1" : "0.5";
+    });
+
+    projectForm.addEventListener('input', () => {
+        const isValid = projectForm.checkValidity();
+        saveProjBtn.disabled = !isValid;
+        saveProjBtn.style.opacity = isValid ? "1" : "0.5";
+    });
 
     const loadedData = loadData();
     if (loadedData.employees.length === 0 && loadedData.projects.length === 0) {

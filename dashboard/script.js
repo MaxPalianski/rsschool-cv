@@ -193,72 +193,93 @@ document.addEventListener('DOMContentLoaded', () => {
         saveProjBtn.style.opacity = isValid ? "1" : "0.5";
     });
 
-    const loadedData = loadData();
-    if (loadedData.employees.length === 0 && loadedData.projects.length === 0) {
-        console.log("LocalStorage is empty.");
-        currentEmployees = [...orders];
-        currentProjects = [...initialProjects];
-        saveData(currentEmployees, currentProjects);
-    } else {
-        console.log("Loading data from localStorage...");
-        currentEmployees = loadedData.employees;
-        currentProjects = loadedData.projects;
+    const empThead = document.querySelector('.order-table thead');
+
+    if (empThead) {
+        empThead.addEventListener('click', (e) => {
+            const key = e.target.dataset.key;
+            if (e.target.tagName === 'TH' && key && key !== 'Actions') {
+                currentEmployees.sort((a, b) => {
+                    const valA = a[key];
+                    const valB = b[key];
+                    if (typeof valA === 'number') {
+                        return valA - valB;
+                    } else {
+                        return String(valA).localeCompare(String(valB));
+                    }
+                });
+                renderEmployeesTable(currentEmployees);
+    }
+})
     }
 
-    projectForm.addEventListener('submit', (e) => {
-        e.preventDefault();
 
-        const newObj = {
-            name: document.getElementById('p-name').value,
-            revenue: Number(document.getElementById('p-revenue').value),
-            cost: Number(document.getElementById('p-cost').value),
-            status: document.getElementById('p-status').value
-        };
+const loadedData = loadData();
+if (loadedData.employees.length === 0 && loadedData.projects.length === 0) {
+    console.log("LocalStorage is empty.");
+    currentEmployees = [...orders];
+    currentProjects = [...initialProjects];
+    saveData(currentEmployees, currentProjects);
+} else {
+    console.log("Loading data from localStorage...");
+    currentEmployees = loadedData.employees;
+    currentProjects = loadedData.projects;
+}
 
-        currentProjects.push(newObj);
-        saveData(currentEmployees, currentProjects);
+projectForm.addEventListener('submit', (e) => {
+    e.preventDefault();
 
-        renderProjectsTable(currentProjects);
-        modal.style.display = 'none';
-        projectForm.reset();
+    const newObj = {
+        name: document.getElementById('p-name').value,
+        revenue: Number(document.getElementById('p-revenue').value),
+        cost: Number(document.getElementById('p-cost').value),
+        status: document.getElementById('p-status').value
+    };
+
+    currentProjects.push(newObj);
+    saveData(currentEmployees, currentProjects);
+
+    renderProjectsTable(currentProjects);
+    modal.style.display = 'none';
+    projectForm.reset();
+});
+
+const tableBody = document.getElementById('table-body');
+if (tableBody) {
+    tableBody.addEventListener('click', (e) => {
+        const deleteBtn = e.target.closest('.delete-btn');
+        if (deleteBtn) {
+            const index = deleteBtn.dataset.index;
+            currentProjects.splice(index, 1);
+            saveData(currentEmployees, currentProjects);
+            renderProjectsTable(currentProjects);
+        }
     });
-
-    const tableBody = document.getElementById('table-body');
-    if (tableBody) {
-        tableBody.addEventListener('click', (e) => {
-            const deleteBtn = e.target.closest('.delete-btn');
-            if (deleteBtn) {
-                const index = deleteBtn.dataset.index;
-                currentProjects.splice(index, 1);
-                saveData(currentEmployees, currentProjects);
-                renderProjectsTable(currentProjects);
-            }
-        });
-    }
-    const empTableBody = document.getElementById('employees-body');
-    if (empTableBody) {
-        empTableBody.addEventListener('click', (e) => {
-            const deleteBtn = e.target.closest('.delete-btn');
-            if (deleteBtn) {
-                const index = deleteBtn.dataset.index;
-                currentEmployees.splice(index, 1);
-                saveData(currentEmployees, currentProjects);
-                renderEmployeesTable(currentEmployees);
-            }
-        });
-    }
-    const empTableContainer = document.getElementById('orders-body');
-    if (empTableContainer) {
-        empTableContainer.addEventListener('click', (e) => {
-            const deleteBtn = e.target.closest('.delete-btn');
-            if (deleteBtn) {
-                const index = deleteBtn.dataset.index;
-                currentEmployees.splice(index, 1);
-                saveData(currentEmployees, currentProjects);
-                renderEmployeesTable(currentEmployees);
-            }
-        });
-    }
-    updateDashboard();
+}
+const empTableBody = document.getElementById('employees-body');
+if (empTableBody) {
+    empTableBody.addEventListener('click', (e) => {
+        const deleteBtn = e.target.closest('.delete-btn');
+        if (deleteBtn) {
+            const index = deleteBtn.dataset.index;
+            currentEmployees.splice(index, 1);
+            saveData(currentEmployees, currentProjects);
+            renderEmployeesTable(currentEmployees);
+        }
+    });
+}
+const empTableContainer = document.getElementById('orders-body');
+if (empTableContainer) {
+    empTableContainer.addEventListener('click', (e) => {
+        const deleteBtn = e.target.closest('.delete-btn');
+        if (deleteBtn) {
+            const index = deleteBtn.dataset.index;
+            currentEmployees.splice(index, 1);
+            saveData(currentEmployees, currentProjects);
+            renderEmployeesTable(currentEmployees);
+        }
+    });
+}
+updateDashboard();
 });
 

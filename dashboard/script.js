@@ -193,6 +193,8 @@ document.addEventListener('DOMContentLoaded', () => {
         saveProjBtn.style.opacity = isValid ? "1" : "0.5";
     });
 
+    let sortDirections = {};
+
     document.querySelectorAll('.order-table').forEach(table => {
         const thead = table.querySelector('thead');
         if (!thead) return;
@@ -203,6 +205,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const key = th.dataset.key.toLowerCase();
 
+            sortDirections[key] = sortDirections[key] === 'asc' ? 'desc' : 'asc';
+
             const isEmployees = table.querySelector('#employees-body, #orders-body');
             const targetArray = isEmployees ? currentEmployees : currentProjects;
             const renderFn = isEmployees ? renderEmployeesTable : renderProjectsTable;
@@ -211,10 +215,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 const valA = a[key];
                 const valB = b[key];
 
-                if (typeof valA === 'number') return valA - valB;
-                return String(valA || "").localeCompare(String(valB || ""));
+                if (typeof valA === 'number') {
+                    return sortDirections[key] === 'asc' ? valA - valB : valB - valA;
+                }
+                const compare = String(valA || "").localeCompare(String(valB || ""));
+                return sortDirections[key] === 'asc' ? compare : -compare;
             });
-
             renderFn(targetArray);
         });
     });
@@ -286,5 +292,5 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-    updateDashboard();
+    updateDashboard(); 
 });

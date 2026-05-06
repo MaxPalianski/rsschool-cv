@@ -280,3 +280,18 @@
     cursor: pointer;
     transition: background-color 0.2s;
 }
+
+.order-table th i {
+    margin-left: 8px;
+    font-size: 0.8rem;
+    opacity: 0.4;
+    transition: 0.3s;
+}
+.order-table th:hover i {
+    opacity: 1;
+}
+.order-table th i.fa-sort-up,
+.order-table th i.fa-sort-down {
+    opacity: 1;
+    color: var(--primary);
+}

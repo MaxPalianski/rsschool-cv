@@ -83,11 +83,11 @@ document.addEventListener('DOMContentLoaded', () => {
         tableTitle.textContent = 'Projects';
         tableHead.innerHTML = `
         <tr>
-        <th data-key="name">Project Name</th>
-        <th data-key="revenue">Revenue</th>
-        <th data-key="cost">Cost</th>
+        <th data-key="name">Project Name<i class = "fas fa-sort"></i></th>
+        <th data-key="revenue">Revenue<i class = "fas fa-sort"></i></th>
+        <th data-key="cost">Cost<i class = "fas fa-sort"></i></th>
         <th>Profit</th>
-        <th data-key="status">Status</th>
+        <th data-key="status">Status<i class = "fas fa-sort"></i></th>
         <th>Actions</th>
         </tr>
         `;
@@ -221,10 +221,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 const compare = String(valA || "").localeCompare(String(valB || ""));
                 return sortDirections[key] === 'asc' ? compare : -compare;
             });
+
+            thead.querySelectorAll('i.fas').forEach(icon => {
+                icon.classList.remove('fa-sort-up', 'fa-sort-down');
+                icon.classList.add('fa-sort');
+            });
+
+            const icon = th.querySelector('i');
+            if (icon) {
+                icon.classList.remove('fa-sort');
+                icon.classList.add(sortDirections[key] === 'asc' ? 'fa-sort-up' : 'fa-sort-down');
+            }
+
             renderFn(targetArray);
         });
     });
-
 
     const loadedData = loadData();
     if (loadedData.employees.length === 0 && loadedData.projects.length === 0) {
@@ -292,5 +303,5 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-    updateDashboard(); 
+    updateDashboard();
 });

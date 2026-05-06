@@ -1,13 +1,15 @@
+import { saveData, loadData } from './js/utils.js';
 import { updateDateTime } from "./js/ui.js";
 import { orders, getCurrentStats } from "./js/data.js";
 import { renderStats } from "./js/ui.js";
 import { renderOrders } from "./js/ui.js";
 import { renderSimpleChart } from "./js/charts.js";
-import { currentPeriod, loadData, initialProjects, saveData } from "./js/data.js";
+import { currentPeriod, initialProjects } from "./js/data.js";
 import { renderEmployeesTable, renderProjectsTable } from "./js/ui.js";
 
 let currentProjects = [];
 let currentEmployees = [];
+let selectedEmployeeIndex = null;
 
 function updateDashboard() {
     const data = loadData();
@@ -142,9 +144,9 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("data", dobValue);
         if (!dobValue) {
             alert("Select a date of birth");
-         return;
+            return;
         }
-        
+
         const dob = new Date(dobValue);
         const today = new Date();
 
@@ -157,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
             age--;
         }
-        if (age < 18 || age >65) {
+        if (age < 18 || age > 65) {
             alert("The employee must be between 18 and 65 years old");
             return;
         }
@@ -167,7 +169,8 @@ document.addEventListener('DOMContentLoaded', () => {
             position: document.getElementById('e-position').value,
             salary: Number(document.getElementById('e-salary').value),
             status: document.getElementById('e-status').value,
-            dob: dobValue
+            dob: dobValue,
+            assignments: []
         };
         currentEmployees.push(newEmp);
 
@@ -175,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderEmployeesTable(currentEmployees);
         empModal.style.display = 'none';
         empForm.reset();
-    
+
     });
 
     function checkAge(dobValue) {
@@ -306,6 +309,24 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const empTableBody = document.getElementById('employees-body');
     if (empTableBody) {
+        empTableBody.addEventListener('blur', (e) => {
+            if (e.target.classList.contains('salary-amount')) {
+                const index = e.target.dataset.index;
+                const cleanValue = e.target.textContent.replace(/[^0-9.]/g, '');
+                const newSalary = Number(cleanValue);
+
+                if (!isNaN(newSalary) && cleanValue !== "") {
+                    currentEmployees[index].salary = newSalary;
+                    saveData(currentEmployees, currentProjects);
+
+                    renderEmployeesTable(currentEmployees);
+                } else {
+                    renderEmployeesTable(currentEmployees);
+                }
+            }
+        }, true);
+    }
+    if (empTableBody) {
         empTableBody.addEventListener('click', (e) => {
             const deleteBtn = e.target.closest('.delete-btn');
             if (deleteBtn) {
@@ -316,6 +337,69 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    const empBody = document.getElementById('employees-body');
+    if (empBody) {
+        empBody.addEventListener('click', (e) => {
+            const btn = e.target.closest('.assign-btn');
+            if (btn) {
+                selectedEmployeeIndex = btn.dataset.index;
+                const modalAssign = document.getElementById('modal-assign');
+                const projectSelect = document.getElementById('assign-project-list');
+
+                projectSelect.innerHTML = currentProjects.map(p =>
+                    `<option value="${p.name}">${p.name}</option>`
+                ).join('');
+                modalAssign.style.display = 'flex';
+            }
+        });
+    }
+
+    const confirmBtn = document.getElementById('confirm-assign');
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', () => {
+            const projectName = document.getElementById('assign-project-list').value;
+            const capacityInput = document.getElementById('assign-capacity');
+            const capacity = capacityInput ? parseFloat(capacityInput.value) : 0;
+
+            if (!projectName || isNaN(capacity)) {
+                alert("Fill all fields correctly");
+                return;
+            }
+
+            const employee = currentEmployees[selectedEmployeeIndex];
+            if (!employee) {
+                console.error("Employee not found", selectedEmployeeIndex);
+                return;
+            }
+            if (!employee.assignments) {
+                employee.assignments = [];
+            }
+            employee.assignments.push({
+                projectName: projectName,
+                capacity: capacity
+            });
+            saveData(currentEmployees, currentProjects);
+            alert(`Employee assigned to ${projectName}!`);
+            document.getElementById('modal-assign').style.display = 'none';
+            renderEmployeesTable(currentEmployees);
+        });
+    }
+
+    const closeAssignBtn = document.getElementById('close-assign-modal');
+    if(closeAssignBtn) {
+        closeAssignBtn.addEventListener('click', () => {
+            document.getElementById('modal-assign'.style.display = 'none');
+        });
+    }
+
+    window.addEventListener('click', (e) => {
+        const modalAssign = document.getElementById('modal-assign');
+        if(e.target === modalAssign) {
+            modalAssign.style.display = 'none';
+        }
+    });
+
     const empTableContainer = document.getElementById('orders-body');
     if (empTableContainer) {
         empTableContainer.addEventListener('click', (e) => {

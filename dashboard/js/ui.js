@@ -78,9 +78,19 @@ export function renderEmployeesTable(empArray) {
             <td>${emp.name}</td>
             <td>${emp.position}</td>
             <td>${age}</td>
-            <td class="salary-amount">$${emp.salary.toLocaleString()}</td>
+            <td class="salary-amount" 
+            contenteditable="true"
+            data-index="${index}"
+            >$${emp.salary.toLocaleString()}</td>
             <td><span class="status-badge" data-status="${emp.status}">${emp.status}</span></td>
-            <td>${getActionButtons(index, 'delete-employee-btn')}</td>
+            <td>
+            <div class="action-cell">
+            ${getActionButtons(index, 'delete-employee-btn')}
+            <button class="assign-btn btn" data-index="${index}" title="Assign to Project">
+            <i class="fas fa-user-plus"></i>
+            </button>
+            </div>
+            </td>
         `;
         container.appendChild(tr);
     });

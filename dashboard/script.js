@@ -212,13 +212,29 @@ document.addEventListener('DOMContentLoaded', () => {
             const renderFn = isEmployees ? renderEmployeesTable : renderProjectsTable;
 
             targetArray.sort((a, b) => {
-                const valA = a[key];
-                const valB = b[key];
+                let valA, valB;
 
-                if (typeof valA === 'number') {
-                    return sortDirections[key] === 'asc' ? valA - valB : valB - valA;
+                if (key === 'age') {
+                    const getAge = (dob) => {
+                        const birth = new Date(dob);
+                        if (isNaN(birth)) return 0;
+                        return new Date().getFullYear() - birth.getFullYear();
+                    };
+                    valA = getAge(a.dob);
+                    valB = getAge(b.dob);
+                } else {
+                    valA = a[key];
+                    valB = b[key];
                 }
-                const compare = String(valA || "").localeCompare(String(valB || ""));
+
+                if (typeof valA === 'number' || key === 'age') {
+                    const numA = parseFloat(valA) || 0;
+                    const numB = parseFloat(valB) || 0;
+                    return sortDirections[key] == 'asc' ? numA - numB : numB - numA;
+                }
+                const straA = String(valA || "");
+                const strB = String(valB || "");
+                const compare = straA.localeCompare(strB);
                 return sortDirections[key] === 'asc' ? compare : -compare;
             });
 

@@ -18,36 +18,43 @@ export function renderProjectsTable(projectsArray) {
 
     if (projectsArray.length === 0) {
         container.innerHTML = '<tr><td colspan="6" style="text-align:center;">No projects active.</td></tr>';
-        const totalElement = document.getElementById('total-income');
-        if (totalElement) totalElement.textContent = '$0';
+        updateTotalIncome([]);
         return;
     }
 
     projectsArray.forEach((project, index) => {
-        const profit = project.revenue - project.cost;
-        const profitClass = profit >= 0 ? 'text-green' : 'text-red';
+        const profit = (project.revenue || 0) - (project.cost || 0);
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${project.name}</td>
-            <td>${project.revenue.toLocaleString()}</td>
-            <td>${project.cost.toLocaleString()}</td>
-            <td style="color: ${project.revenue - project.cost >= 0 ? 'var(--success)' : 'var(--danger)'}">
-                $${(project.revenue - project.cost).toLocaleString()}
+            <td>${(project.revenue || 0).toLocaleString()}</td>
+            <td>${(project.cost || 0).toLocaleString()}</td>
+            <td style="color: ${profit >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: bold;">
+            $${profit.toLocaleString()}
             </td>
             <td><span class="status-badge">${project.status}</span></td>
-            <td>${getActionButtons(index, 'delete-project-btn')}</td> 
+            <td>
+            <div class="action-cell">
+            <button class="delete btn delete-project-btn" data-index="${index}">
+            <i class="fas fa-trash"></i>
+            </button>
+            </div>
+            </td>
         `;
         container.appendChild(tr);
     });
-    const totalIncome = projectsArray.reduce((sum, p) => sum + (p.revenue - p.cost), 0);
-    const totalElement = document.getElementById('total-income');
-    if (totalElement) {
-        totalElement.textContent = `$${totalIncome.toLocaleString()}`;
-        totalElement.style.color = totalIncome >= 0 ? 'text-green' : 'text-red'
-    }
-
     updateTotalIncome(projectsArray);
+}
+
+export function updateTotalIncome(projectsArray) {
+    const totalElement = document.getElementById('total-income');
+    if (!totalElement) return;
+    const total = (projectsArray || []).reduce((sum, proj) => {
+        return sum + ((proj.revenue || 0) - (proj.cost || 0));
+    }, 0);
+    totalElement.textContent = `$${total.toLocaleString()}`;
+    totalElement.style.color = total >= 0 ? 'var(--success)' : 'var(--danger)';
 }
 
 export function renderEmployeesTable(empArray) {
@@ -105,7 +112,7 @@ export function renderOrders(containerId, data) {
 
     container.innerHTML = data.map(order => {
         let statusClass = order.status.toLowerCase();
-        
+
         return `
         <tr>
         <td>${order.name}</td>
@@ -116,11 +123,3 @@ export function renderOrders(containerId, data) {
     }).join('');
 }
 
-function updateTotalIncome(projectsArray) {
-    const totalIncome = projectsArray.reduce((sum, p) => sum + (p.revenue - p.cost), 0);
-    const totalElement = document.getElementById('total-income');
-    if (totalElement) {
-        totalElement.textContent = `$${totalIncome.toLocaleString()}`;
-        totalElement.className = totalIncome >= 0 ? 'text-green' : 'text-red';
-    }
-}

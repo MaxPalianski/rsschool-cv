@@ -68,7 +68,8 @@ export function renderEmployeesTable(empArray) {
         tr.innerHTML = `
             <td>${emp.name}</td>
             <td>${emp.position}</td>
-            <td>$${emp.salary.toLocaleString()}</td>
+            <td>${age}</td>
+            <td class="salary-amount">$${emp.salary.toLocaleString()}</td>
             <td><span class="status-badge">${emp.status}</span></td>
             <td>${getActionButtons(index, 'delete-employee-btn')}</td>
         `;

@@ -180,10 +180,11 @@
     color: white;
 }
 
-#employees-body td {
+#employees-body td.salary-amount {
     padding: 15px;
     border-bottom: 1px solid var(--bg-300);
-    color: var(--text-100);
+    color: var(--success);
+    font-weight: 700;
 }
 
 .status-badge {
@@ -295,3 +296,4 @@
     opacity: 1;
     color: var(--primary);
 }
+

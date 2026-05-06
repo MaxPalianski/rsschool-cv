@@ -13,6 +13,13 @@
     --success: #10b981;
     --danger: #ef4444;
 
+    --badge-active: #10b981;
+    --badge-on-leave:#f59e0b;
+    --badge-terminated:#ef4444;
+    --badge-in-progress: #3b82f6;
+    --badge-on-hold: #f59e0b;
+    --badge-completed: #10b981;
+    
     --radius-l: 16px;
     --gap-m: 24px;
     --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;

@@ -139,17 +139,26 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
 
         const dobValue = document.getElementById('e-dob').value;
-        if (!dobValue) return;
-
+        console.log("data", dobValue);
+        if (!dobValue) {
+            alert("Select a date of birth");
+         return;
+        }
+        
         const dob = new Date(dobValue);
         const today = new Date();
+
+        if (dob > today) {
+            alert("Date of birth cannot be in thefuture")
+        }
+
         let age = today.getFullYear() - dob.getFullYear();
         const m = today.getMonth() - dob.getMonth();
         if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
             age--;
         }
-        if (age < 18) {
-            alert("The employee must be over 18 years old!");
+        if (age < 18 || age >65) {
+            alert("The employee must be between 18 and 65 years old");
             return;
         }
 
@@ -166,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderEmployeesTable(currentEmployees);
         empModal.style.display = 'none';
         empForm.reset();
-
+    
     });
 
     function checkAge(dobValue) {

@@ -297,3 +297,27 @@
     color: var(--primary);
 }
 
+.status-badge[data-status="Active" i],
+.status-badge[data-status="Completed" i] {
+    color: var(--badge-active);
+    background: rgba(16, 185, 129, 0.1);
+}
+.status-badge[data-status="On leave" i],
+.status-badge[data-status="On Hold" i] {
+    color: var(--badge-on-leave);
+    background: rgba(245, 158, 11, 0.1);
+}
+.status-badge[data-status="Terminated" i] {
+    color: var(--badge-terminated);
+    background: rgba(239, 68, 68, 0.1);
+}
+.status-badge[data-status="In progress" i] {
+    color: var(--badge-in-progress);
+    background: rgba(59, 130, 246, 0.1);
+}
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}

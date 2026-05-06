@@ -33,7 +33,7 @@ export function renderProjectsTable(projectsArray) {
             <td style="color: ${profit >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: bold;">
             $${profit.toLocaleString()}
             </td>
-            <td><span class="status-badge">${project.status}</span></td>
+            <td><span class="status-badge" data-status="${project.status}">${project.status}</span></td>
             <td>
             <div class="action-cell">
             <button class="delete btn delete-project-btn" data-index="${index}">
@@ -58,6 +58,8 @@ export function updateTotalIncome(projectsArray) {
 }
 
 export function renderEmployeesTable(empArray) {
+    const title = document.querySelector('#employees-section h2');
+    if (title) title.textContent = `Team Management (${empArray.length})`;
     const container = document.getElementById('employees-body');
     if (!container) return;
     container.innerHTML = '';
@@ -77,7 +79,7 @@ export function renderEmployeesTable(empArray) {
             <td>${emp.position}</td>
             <td>${age}</td>
             <td class="salary-amount">$${emp.salary.toLocaleString()}</td>
-            <td><span class="status-badge">${emp.status}</span></td>
+            <td><span class="status-badge" data-status="${emp.status}">${emp.status}</span></td>
             <td>${getActionButtons(index, 'delete-employee-btn')}</td>
         `;
         container.appendChild(tr);
@@ -122,4 +124,3 @@ export function renderOrders(containerId, data) {
         </tr>`;
     }).join('');
 }
-

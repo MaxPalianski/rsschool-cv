@@ -67,6 +67,8 @@
 .order-table th:nth-child(4) { width: 15%;} /*profit */
 .order-table th:nth-child(5) { width: 15%;} /*status */
 .order-table th:nth-child(6) { width: 10%;} /*actions */
+.order-table th:nth-child(7) { width: 20%;} /*capacity */
+
 
 
 .badge {
@@ -332,4 +334,34 @@
     border-radius: 12px;
     font-size: 0.8rem;
     font-weight: 600;
+}
+
+.projects-badge {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+.capacity-bar-wrapper {
+    width: 100px;
+    height: 6px;
+    background: var(--bg-300);
+    border-radius: 3px;
+    position: relative;
+    margin-top: 5px;
+}
+.capacity-bar {
+    height: 100%;
+    background: var(--primary);
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+.capacity-bar.overload {
+    background: var(--danger);
+}
+.capacity-text {
+    font-size: 0.7rem;
+    position: absolute;
+    right: -45px;
+    top: -5px;
+    color: var(--text-muted);
 }

@@ -360,29 +360,30 @@ document.addEventListener('DOMContentLoaded', () => {
         confirmBtn.addEventListener('click', () => {
             const projectName = document.getElementById('assign-project-list').value;
             const capacityInput = document.getElementById('assign-capacity');
-            const capacity = capacityInput ? parseFloat(capacityInput.value) : 0;
+            const val = capacityInput ? parseFloat(capacityInput.value) : 0;
 
-            if (!projectName || isNaN(capacity)) {
+            if (!projectName || isNaN(val) || val <= 0) {
                 alert("Fill all fields correctly");
                 return;
             }
 
             const employee = currentEmployees[selectedEmployeeIndex];
-            if (!employee) {
-                console.error("Employee not found", selectedEmployeeIndex);
+            if (!employee) return;
+            if (!employee.assignments) employee.assignments = [];
+            const currentTotal = employee.assignments.reduce((sum, a) => sum + (a.capacity || 0), 0);
+            if (currentTotal + val > 1.5) {
+                alert(`Limit exceeded.Current load: ${currentTotal.toFixed(1)}. You're trying to add: ${val}. Max allowed: 1.5`);
                 return;
-            }
-            if (!employee.assignments) {
-                employee.assignments = [];
             }
             employee.assignments.push({
                 projectName: projectName,
-                capacity: capacity
+                capacity: val
             });
             saveData(currentEmployees, currentProjects);
-            alert(`Employee assigned to ${projectName}!`);
             document.getElementById('modal-assign').style.display = 'none';
+            capacityInput.value = '';
             renderEmployeesTable(currentEmployees);
+            alert(`Successfully assigned to ${projectName}!`);
         });
     }
 

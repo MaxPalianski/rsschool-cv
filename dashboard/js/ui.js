@@ -73,6 +73,14 @@ export function renderEmployeesTable(empArray) {
         const birthDate = new Date(emp.dob);
         const age = isNaN(birthDate) ? "N/A" : new Date().getFullYear() - birthDate.getFullYear();
 
+        const safeAssignments = (emp && Array.isArray(emp.assignments)) ? emp.assignments : [];
+        const totalCapacity = safeAssignments.reduce((sum, ass) => {
+            const cap = (ass && typeof ass.capacity === 'number') ? ass.capacity : 0;
+            return sum + cap;
+        }, 0);
+        const isMaxed = totalCapacity >= 1.5;
+        const projectsCount = safeAssignments.length;
+
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${emp.name}</td>
@@ -86,9 +94,20 @@ export function renderEmployeesTable(empArray) {
             <td>
             <div class="action-cell">
             ${getActionButtons(index, 'delete-employee-btn')}
-            <button class="assign-btn btn" data-index="${index}" title="Assign to Project">
+            <button class="assign-btn btn" data-index="${index}" title="${isMaxed ? 'Max capacity reached' : 'Assign to Project'}"
+            ${isMaxed ? 'disabled style="opacity: 0.3; cursor: not-allowed;"' : ''}>
             <i class="fas fa-user-plus"></i>
             </button>
+            </div>
+            </td>
+            <td>
+            <div class="projects-badge">
+            <i class="fas fa-briefcase"></i> ${projectsCount}
+            </div>
+            <div class="capacity-bar-wrapper">
+            <div class="capacity-bar ${totalCapacity > 1.5 ? 'overload' : ''}"
+            style="width: ${Math.min((totalCapacity / 1.5) * 100, 100)}%"></div>
+            <span class="capacity-text">${totalCapacity.toFixed(1)} / 1.5</span>
             </div>
             </td>
         `;

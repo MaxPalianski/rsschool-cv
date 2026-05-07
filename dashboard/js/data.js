@@ -30,7 +30,18 @@ export let currentPeriod = {
     year: 2026
 };
 
-const getStorageKey = () => `${currentPeriod.year}-${currentPeriod.month}`;
+export const getStorageKey = () => `team_data_${currentPeriod.year}-${currentPeriod.month}`;
+export function loadData() {
+    const key = getStorageKey();
+    const data = localStorage.getItem(key);
+    return data ? JSON.parse(data) : {employees: [], projects: [] };
+}
+
+export function saveData(employees, projects) {
+    const key = getStorageKey();
+    localStorage.setItem(key, JSON.stringify({ employees, projects }));
+}
+
 export const initialProjects = [
     { name: 'SkyDash Redesign', revenue: 15000, cost: 5000, status: 'In Progress' },
     { name: 'Mobile App', revenue: 8000, cost: 10000, status: 'On Hold' },

@@ -1,10 +1,8 @@
-import { saveData, loadData } from './js/utils.js';
 import { updateDateTime } from "./js/ui.js";
-import { orders, getCurrentStats } from "./js/data.js";
 import { renderStats } from "./js/ui.js";
 import { renderOrders } from "./js/ui.js";
 import { renderSimpleChart } from "./js/charts.js";
-import { currentPeriod, initialProjects } from "./js/data.js";
+import { saveData, loadData, orders, initialProjects, currentPeriod, getCurrentStats } from "./js/data.js";
 import { renderEmployeesTable, renderProjectsTable } from "./js/ui.js";
 
 let currentProjects = [];
@@ -58,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (monthSelect) {
         monthSelect.addEventListener('change', (e) => {
             currentPeriod.month = parseInt(e.target.value);
+            syncLocalData();
             updateDashboard();
         });
     }
@@ -65,6 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (yearSelect) {
         yearSelect.addEventListener('change', (e) => {
             currentPeriod.year = parseInt(e.target.value);
+            syncLocalData();
             updateDashboard();
         });
     }
@@ -265,17 +265,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    const loadedData = loadData();
-    if (loadedData.employees.length === 0 && loadedData.projects.length === 0) {
-        console.log("LocalStorage is empty.");
-        currentEmployees = [...orders];
-        currentProjects = [...initialProjects];
-        saveData(currentEmployees, currentProjects);
-    } else {
-        console.log("Loading data from localStorage...");
-        currentEmployees = loadedData.employees;
-        currentProjects = loadedData.projects;
+    function syncLocalData() {
+        const loadedData = loadData();
+
+        if (loadedData.employees.length === 0 && loadedData.projects.length === 0) {
+            currentEmployees = [...orders];
+            currentProjects = [...initialProjects];
+            saveData(currentEmployees, currentProjects);
+        } else {
+            currentEmployees = loadedData.employees;
+            currentProjects = loadedData.projects;
+        }
     }
+    syncLocalData();
+    updateDashboard();
 
     projectForm.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -298,12 +301,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const tableBody = document.getElementById('table-body');
     if (tableBody) {
         tableBody.addEventListener('click', (e) => {
-            const deleteBtn = e.target.closest('.delete-btn');
+            const deleteBtn = e.target.closest('.delete-project-btn') || e.target.closest('.delete-btn');
             if (deleteBtn) {
                 const index = deleteBtn.dataset.index;
                 currentProjects.splice(index, 1);
                 saveData(currentEmployees, currentProjects);
                 renderProjectsTable(currentProjects);
+                updateDashboard();
             }
         });
     }
@@ -390,7 +394,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeAssignBtn = document.getElementById('close-assign-modal');
     if(closeAssignBtn) {
         closeAssignBtn.addEventListener('click', () => {
-            document.getElementById('modal-assign'.style.display = 'none');
+            document.getElementById('modal-assign').style.display = 'none';
         });
     }
 

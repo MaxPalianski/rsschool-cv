@@ -11,25 +11,30 @@ function getActionButtons(index, customDeleteClass = '') {
     `;
 }
 
-export function renderProjectsTable(projectsArray) {
+export function renderProjectsTable(projectsArray, employeesArray = []) {
     const container = document.getElementById('table-body');
     if (!container) return;
     container.innerHTML = '';
 
     if (projectsArray.length === 0) {
         container.innerHTML = '<tr><td colspan="6" style="text-align:center;">No projects active.</td></tr>';
-        updateTotalIncome([]);
         return;
     }
 
     projectsArray.forEach((project, index) => {
-        const profit = (project.revenue || 0) - (project.cost || 0);
+        const projectCost = employeesArray.reduce((sum, emp) => {
+            const assignment = emp.assignments?.find(a => a.projectName === project.name);
+            return sum + (assignment ? (emp.salary * assignment.capacity) : 0);
+        }, 0);
+
+        const revenue = project.revenue || 0;
+        const profit = revenue - projectCost;
 
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${project.name}</td>
-            <td>${(project.revenue || 0).toLocaleString()}</td>
-            <td>${(project.cost || 0).toLocaleString()}</td>
+            <td>${revenue.toLocaleString()}</td>
+            <td>${projectCost.toLocaleString()}</td>
             <td style="color: ${profit >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: bold;">
             $${profit.toLocaleString()}
             </td>
@@ -44,14 +49,24 @@ export function renderProjectsTable(projectsArray) {
         `;
         container.appendChild(tr);
     });
-    updateTotalIncome(projectsArray);
+    updateTotalIncome(projectsArray, employeesArray);
 }
 
-export function updateTotalIncome(projectsArray) {
+export function updateTotalIncome(projectsArray, employeesArray = []) {
     const totalElement = document.getElementById('total-income');
     if (!totalElement) return;
-    const total = (projectsArray || []).reduce((sum, proj) => {
-        return sum + ((proj.revenue || 0) - (proj.cost || 0));
+
+    const total = (projectsArray || []).reduce((sum, project) => {
+        const projectCost = (employeesArray || []).reduce((eSum, emp) => {
+            const assignment = emp.assignments?.find(a => 
+                a.projectName.trim().toLowerCase() === project.name.trim().toLowerCase());
+            const salary = Number(emp.salary) || 0;
+            const capacity = Number(assignment?.capacity) || 0;
+            return eSum + (salary * capacity);
+        }, 0);
+        const revenue = Number(project.revenue) || 0;
+        const profit = revenue - projectCost;
+        return sum + profit;
     }, 0);
     totalElement.textContent = `$${total.toLocaleString()}`;
     totalElement.style.color = total >= 0 ? 'var(--success)' : 'var(--danger)';

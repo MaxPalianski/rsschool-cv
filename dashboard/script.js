@@ -2,19 +2,45 @@ import { updateDateTime } from "./js/ui.js";
 import { renderStats } from "./js/ui.js";
 import { renderOrders } from "./js/ui.js";
 import { renderSimpleChart } from "./js/charts.js";
-import { saveData, loadData, orders, initialProjects, currentPeriod, getCurrentStats } from "./js/data.js";
+import { saveData, loadData, orders, initialProjects, currentPeriod, getStorageKey } from "./js/data.js";
 import { renderEmployeesTable, renderProjectsTable } from "./js/ui.js";
 
 let currentProjects = [];
 let currentEmployees = [];
 let selectedEmployeeIndex = null;
 
+function getCurrentStats (employees, projects) {
+        const totalNetProfit = projects.reduce((sum, project) => {
+            const cost = employees.reduce((eSum, emp) => {
+                const assignment = emp.assignments?.find(a =>
+                    a.projectName.trim().toLowerCase() === project.name.trim().toLowerCase()
+                );
+                return eSum + (Number(emp.salary) * (assignment?.capacity || 0));
+            }, 0);
+            return sum + (Number(project.revenue) - cost);
+        }, 0);
+        return [
+            { title: "Total Profit",
+                value: `$${totalNetProfit.toLocaleString()}`,
+                trend: "+15%"
+            },
+            { title: "Total Employees",
+                value: employees.filter(e => e.status === 'Active').length,
+                trend: "Active"
+            },
+            { title: "Active Projects",
+                value: projects.filter(p => p.status === 'In Progress').length,
+                trend: "In Progress"
+            }
+        ];
+    }
+
 function updateDashboard() {
     const data = loadData();
     const employees = data.employees || [];
     const projects = data.projects || [];
     renderEmployeesTable(employees);
-    renderProjectsTable(projects);
+    renderProjectsTable(projects, employees);
     const statsData = getCurrentStats(employees, projects);
 
     renderStats('stats-container', statsData);
@@ -49,6 +75,29 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     renderSimpleChart('chart-container');
+
+    const copyBtn = document.getElementById('copy-month-data');
+    if (copyBtn) {
+        copyBtn.addEventListener('click', () => {
+            const prevMonth = currentPeriod.month === 0 ? 11 : currentPeriod.month - 1;
+            const prevYear = currentPeriod.month === 0 ? currentPeriod.year - 1 : currentPeriod.year;
+
+            const prevKey = `team_data_${prevYear}_${prevMonth}`;
+            const prevData = localStorage.getItem(prevKey);
+            
+            if(prevData) {
+                const confirmed = confirm("This current month data. Continue?");
+                if (confirmed) {
+                    localStorage.setItem(getStorageKey(), prevData);
+                    syncLocalData();
+                    updateDashboard();
+                    alert("data copied successfully");
+                }
+            } else {
+                alert("No data found for the previous month");
+            }
+        });
+    }
 
     const monthSelect = document.getElementById('month-select');
     const yearSelect = document.getElementById('year-select');
@@ -175,6 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentEmployees.push(newEmp);
 
         saveData(currentEmployees, currentProjects);
+        updateDashboard();
         renderEmployeesTable(currentEmployees);
         empModal.style.display = 'none';
         empForm.reset();
@@ -293,7 +343,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentProjects.push(newObj);
         saveData(currentEmployees, currentProjects);
 
-        renderProjectsTable(currentProjects);
+        updateDashboard();
         modal.style.display = 'none';
         projectForm.reset();
     });
@@ -337,7 +387,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const index = deleteBtn.dataset.index;
                 currentEmployees.splice(index, 1);
                 saveData(currentEmployees, currentProjects);
-                renderEmployeesTable(currentEmployees);
+                updateDashboard();
             }
         });
     }
@@ -364,7 +414,7 @@ document.addEventListener('DOMContentLoaded', () => {
         confirmBtn.addEventListener('click', () => {
             const projectName = document.getElementById('assign-project-list').value;
             const capacityInput = document.getElementById('assign-capacity');
-            const val = capacityInput ? parseFloat(capacityInput.value) : 0;
+            const val = capacityInput ? parseFloat(capacityInput.value.replace(',', '.')) : 0;
 
             if (!projectName || isNaN(val) || val <= 0) {
                 alert("Fill all fields correctly");
@@ -386,7 +436,8 @@ document.addEventListener('DOMContentLoaded', () => {
             saveData(currentEmployees, currentProjects);
             document.getElementById('modal-assign').style.display = 'none';
             capacityInput.value = '';
-            renderEmployeesTable(currentEmployees);
+            syncLocalData();
+            updateDashboard();
             alert(`Successfully assigned to ${projectName}!`);
         });
     }

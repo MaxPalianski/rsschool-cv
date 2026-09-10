@@ -25,11 +25,11 @@ ul {
 }
 
 li {
-    margin-botton: 8px;
+    margin-bottom: 8px;
 }
 
 section {
-    margin-botton: 30px
+    margin-bottom: 30px
 }
 
 a {
@@ -46,4 +46,24 @@ footer {
     font-size: 0.9em;
     color: #888;
     margin-top: 20px;
+}
+
+pre {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    padding: 15px;
+    border-radius: 8px;
+    font-family: 'Courier New', Courier, monospace;
+    overflow-x: auto;
+}
+.keyword {
+    color: #569cd6;
+}
+
+.string {
+    color: #ce9178;
+}
+
+.function {
+    color: #dcdcaa;
 }
